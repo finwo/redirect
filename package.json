@@ -1,28 +1,26 @@
 {
-  "name": "redirect",
-  "version": "1.0.0",
-  "description": "Domain and url redirection",
-  "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/index.js",
+    "start:build": "npm run build && npm run start",
+    "watch": "nodemon -w src -e ts -x npm -- run start:build",
+    "build": "tsc"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/finwo/redirect.git"
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "nodemon": "^2.0.22"
   },
-  "author": "Robin Bron",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/finwo/redirect/issues"
-  },
-  "homepage": "https://github.com/finwo/redirect#readme",
   "dependencies": {
-    "bluebird": "^3.4.6",
-    "forever": "^0.15.2",
-    "handlebars": "^4.0.5",
-    "lodash": "^4.16.4",
-    "mime-types": "^2.1.12",
-    "mysql2": "^3.2.0"
+    "@finwo/di": "^1.1.8",
+    "@finwo/router": "^0.5.0",
+    "@finwo/router-fastify": "^0.5.0",
+    "fastify": "^4.15.0",
+    "module-alias": "^2.2.2",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.12"
+  },
+  "_moduleAliases": {
+    "@core": "dist/core",
+    "@app": "dist/Application"
   }
 }
