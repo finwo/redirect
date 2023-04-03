@@ -1,28 +1,27 @@
-var config  = global.config = require('./config'),
-    http    = require('http'),
-    mysql   = require('mysql'),
-    Promise = require('bluebird'),
-    url     = require('url'),
-    fs      = require('fs'),
-    path    = require('path'),
-    mime    = require('mime-types'),
-    hbs     = require('handlebars'),
-    _       = require('lodash');
+const config  = global.config = require('./config');
+const http    = require('http');
+const mysql   = require('mysql2');
+const url     = require('url');
+const fs      = require('fs');
+const path    = require('path');
+const mime    = require('mime-types');
+const hbs     = require('handlebars');
+const _       = require('lodash');
 
 // Connect to mysql server
-var db = global.db = mysql.createConnection(config.database[process.env.DB || config.database.default]);
+const db = global.db = mysql.createConnection(config.database[process.env.DB || config.database.default]);
 db.connect();
 
 function mimetype(filename) {
-  var ext = filename.split('.').pop();
+  const ext = filename.split('.').pop();
   return mimetype[ext] || (mimetype[ext] = mime.lookup(filename));
 }
 
 function getCookie(request, cname) {
-  var name = cname + "=";
-  var ca = (request.headers.cookie || '').split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
+  const name = cname + "=";
+  const ca = (request.headers.cookie || '').split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
     while (c.charAt(0)==' ') {
       c = c.substring(1);
     }
@@ -36,7 +35,7 @@ function getCookie(request, cname) {
 function auth(request) {
   var authCookie = getCookie(request,'auth'),
       auth = authCookie.split(':');
-  return config.admin.checkPassword(auth[0],auth[1]);
+  return config.admin.checkPassword(db, auth[0],auth[1]);
 }
 
 // Startup compilation of templates

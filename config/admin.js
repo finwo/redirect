@@ -18,7 +18,9 @@ module.exports.admin = {
     'localhost:1337'
   ],
 
-  checkPassword: function(username, hash) {
+  checkPassword: async function(db, username, hash) {
+
+
 
     var environment = process.env.ENVIRONMENT || 'production';
     if ( environment === 'test' && username === 'test' ) return Promise.resolve(username);
