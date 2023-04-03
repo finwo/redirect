@@ -7,6 +7,8 @@ import { plugin } from '@finwo/router-fastify';
 const app = Fastify();
 
 import { ApplicationModule } from './Application';
+import { UserRepository } from '@app/domain/repository/user';
+import { Container } from '@finwo/di';
 
 // Build a list of controllers we'll start our application with
 // Classes registered as controller will NOT be included by default
@@ -17,9 +19,16 @@ const controllers: any[] = [
 // Register your controllers' routes
 app.register(plugin, controllers);
 
-// Initialize the database connection
 (async () => {
+
+  // Initialize the database connection
   await dataSource.initialize();
+
+  // Ensure an admin account exists
+  const userRepository = Container.get(UserRepository);
+  const hasUsers       = (await userRepository.find({ limit: 1 })).length > 0;
+
+  console.log({ hasUsers });
 
   // And start listening
   app.listen({

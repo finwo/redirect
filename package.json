@@ -17,6 +17,7 @@
     "module-alias": "^2.2.2",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
+    "supercop": "^2.2.6",
     "typeorm": "^0.3.12"
   },
   "_moduleAliases": {

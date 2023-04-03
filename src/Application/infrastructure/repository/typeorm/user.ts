@@ -1,6 +1,7 @@
 import { User } from '@app/domain/model/user';
 import { UserRepository } from '@app/domain/repository/user';
 import { Service } from '@finwo/di';
+import { Repository } from 'typeorm';
 // import * as path from 'path';
 // import * as fs from 'fs';
 // import { User } from '@pico/domain/model/user.model';
@@ -11,9 +12,22 @@ import { Service } from '@finwo/di';
 @Service()
 export class UserTypeormRepository extends UserRepository {
 
-  private getTypeormRepository() {
+  private getTypeormRepository(): Repository<User> {
     const { dataSource } = require('@core/data-source');
     return dataSource.getRepository(User);
+  }
+
+  public find(opts?: { limit: number, offset: number }): Promise<User[]> {
+    opts = Object.assign({
+      limit : 20,
+      offset: 0,
+    }, opts);
+
+    const repo   = this.getTypeormRepository();
+    return repo.find({
+      skip: opts.offset,
+      take: opts.limit,
+    });
   }
 
 //   public async saveUser(entity: User): Promise<boolean> {

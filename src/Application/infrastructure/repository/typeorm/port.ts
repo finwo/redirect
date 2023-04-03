@@ -1,6 +1,7 @@
 import { Port } from '@app/domain/model/port';
 import { PortRepository } from '@app/domain/repository/port';
 import { Service } from '@finwo/di';
+import { Repository } from 'typeorm';
 // import * as path from 'path';
 // import * as fs from 'fs';
 // import { User } from '@pico/domain/model/user.model';
@@ -11,7 +12,7 @@ import { Service } from '@finwo/di';
 @Service()
 export class PortTypeormRepository extends PortRepository {
 
-  private getTypeormRepository() {
+  private getTypeormRepository(): Repository<Port> {
     const { dataSource } = require('@core/data-source');
     return dataSource.getRepository(Port);
   }
