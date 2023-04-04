@@ -23,8 +23,9 @@
       "reflect-metadata"
     ],
     "paths": {
-      "@core/*": ["./src/core/*"],
-      "@app/*": ["./src/Application/*"]
+      "@app/*"   : ["./src/Application/*"],
+      "@config/*": ["./src/config/*"],
+      "@core/*"  : ["./src/core/*"]
     }
   },
   "include": ["src/**/*"]

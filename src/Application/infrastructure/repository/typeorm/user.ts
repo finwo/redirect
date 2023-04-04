@@ -22,7 +22,6 @@ export class UserTypeormRepository extends UserRepository {
       limit : 20,
       offset: 0,
     }, opts);
-
     const repo   = this.getTypeormRepository();
     return repo.find({
       skip: opts.offset,
@@ -30,17 +29,10 @@ export class UserTypeormRepository extends UserRepository {
     });
   }
 
-//   public async saveUser(entity: User): Promise<boolean> {
-//     try {
-//       const entities = JSON.parse(fs.readFileSync(storageFile).toString());
-//       entities.push(entity);
-//       fs.writeFileSync(storageFile, JSON.stringify(entities));
-//       return true;
-//     } catch(e: any) {
-//       console.warn(e);
-//       return false;
-//     }
-//   }
+  public async saveUser(entity: User): Promise<void> {
+    const repo = this.getTypeormRepository();
+    await repo.save(entity);
+  }
 
 //   public async findAll(): Promise<User[]> {
 //     const entities = JSON.parse(fs.readFileSync(storageFile).toString());

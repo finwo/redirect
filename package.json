@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@finwo/di": "^1.1.8",
+    "@finwo/digest-pbkdf2": "^1.0.2",
     "@finwo/router": "^0.5.0",
     "@finwo/router-fastify": "^0.5.0",
     "fastify": "^4.15.0",
@@ -21,7 +22,8 @@
     "typeorm": "^0.3.12"
   },
   "_moduleAliases": {
-    "@core": "dist/core",
-    "@app": "dist/Application"
+    "@app"   : "dist/Application",
+    "@config": "dist/config",
+    "@core"  : "dist/core"
   }
 }

@@ -9,6 +9,7 @@ const app = Fastify();
 import { ApplicationModule } from './Application';
 import { UserRepository } from '@app/domain/repository/user';
 import { Container } from '@finwo/di';
+import { User } from '@app/domain/model/user';
 
 // Build a list of controllers we'll start our application with
 // Classes registered as controller will NOT be included by default
@@ -24,11 +25,14 @@ app.register(plugin, controllers);
   // Initialize the database connection
   await dataSource.initialize();
 
-  // Ensure an admin account exists
+  // Create admin:admin for bootstrapping if there's no users
   const userRepository = Container.get(UserRepository);
   const hasUsers       = (await userRepository.find({ limit: 1 })).length > 0;
-
-  console.log({ hasUsers });
+  if (!hasUsers) {
+    const adminUser = User.fromData({ username: 'admin' });
+    await adminUser.setPassword('admin');
+    await userRepository.saveUser(adminUser);
+  }
 
   // And start listening
   app.listen({
