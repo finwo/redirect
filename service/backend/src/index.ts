@@ -27,7 +27,7 @@ app.register(plugin, controllers);
 
   // Create admin:admin for bootstrapping if there's no users
   const userRepository = Container.get(UserRepository);
-  const hasUsers       = (await userRepository.find({ limit: 1 })).length > 0;
+  const hasUsers       = (await userRepository.find({ limit: 1 })).data.length > 0;
   if (!hasUsers) {
     const adminUser = User.fromData({ username: 'admin' });
     await adminUser.setPassword('admin');

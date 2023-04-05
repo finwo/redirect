@@ -1,5 +1,6 @@
 import { User } from '@app/domain/model/user';
 import { UserRepository } from '@app/domain/repository/user';
+import { RepositoryListResponse } from '@core/repository-list-response';
 import { Service } from '@finwo/di';
 import { Repository } from 'typeorm';
 // import * as path from 'path';
@@ -17,16 +18,20 @@ export class UserTypeormRepository extends UserRepository {
     return dataSource.getRepository(User);
   }
 
-  public find(opts?: { limit: number, offset: number }): Promise<User[]> {
+  public async find(opts?: { limit: number, offset: number }): Promise<RepositoryListResponse<User>> {
     opts = Object.assign({
       limit : 20,
       offset: 0,
     }, opts);
-    const repo   = this.getTypeormRepository();
-    return repo.find({
+    const repo = this.getTypeormRepository();
+    const data = await repo.find({
       skip: opts.offset,
       take: opts.limit,
     });
+    return {
+      ...opts,
+      data,
+    };
   }
 
   public async saveUser(entity: User): Promise<void> {
