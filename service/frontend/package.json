@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "start": "serve -s dist"
+  },
+  "dependencies": {
+    "esbuild": "^0.17.15",
+    "esbuild-svelte": "^0.7.3",
+    "fast-glob": "^3.2.12",
+    "serve": "^14.2.0",
+    "svelte-preprocess": "^5.0.3",
+    "svelte-router-spa": "^6.0.3"
+  }
+}

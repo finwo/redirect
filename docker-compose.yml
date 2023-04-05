@@ -12,5 +12,14 @@ services:
     volumes:
       - mysql:/var/lib/mysql
 
+  frontend:
+    build: service/frontend
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+    volumes:
+      - ./service/frontend/dist:/srv
+
 volumes:
   mysql:
