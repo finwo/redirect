@@ -1,6 +1,7 @@
 import { UserRepository } from '@app/domain/repository/user';
-import { Controller, Req, Post, Get } from '@finwo/router';
+import { Controller, Req, Post, Get, Middleware } from '@finwo/router';
 import { FastifyRequest } from 'fastify';
+import { detectAuthentication, AuthData } from '../../../../Authentication/middleware';
 
 @Controller('/v1/users')
 export class UserController {
@@ -9,8 +10,9 @@ export class UserController {
   ) {}
 
   @Get()
+  @Middleware(detectAuthentication)
   async getUsers(
-    @Req() req: FastifyRequest,
+    @Req() req: FastifyRequest & AuthData,
   ) {
     const opts: {limit?:number,offset?:number} = {};
     const query = req.query as Record<string, string>;
