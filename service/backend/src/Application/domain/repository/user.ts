@@ -6,5 +6,5 @@ import { RepositoryListResponse } from '@core/repository-list-response';
 export abstract class UserRepository {
   public abstract saveUser(entity: User): Promise<void>;
   public abstract find(opts?: { limit?: number, offset?: number }): Promise<RepositoryListResponse<User>>;
-  // public abstract findByName(name: string): Promise<User[]>;
+  public abstract getByUsername(username: string): Promise<User | null>;
 }

@@ -39,6 +39,11 @@ export class UserTypeormRepository extends UserRepository {
     await repo.save(entity);
   }
 
+  public async getByUsername(username: string): Promise<User | null> {
+    const repo = this.getTypeormRepository();
+    return repo.findOneBy({ username });
+  }
+
 //   public async findAll(): Promise<User[]> {
 //     const entities = JSON.parse(fs.readFileSync(storageFile).toString());
 //     return entities.map((entity: any) => User.fromData(entity));

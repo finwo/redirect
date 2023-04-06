@@ -4,7 +4,9 @@ import 'module-alias/register';
 import Fastify from 'fastify';
 import { dataSource } from '@core/data-source';
 import { plugin } from '@finwo/router-fastify';
+import cors from '@fastify/cors';
 const app = Fastify();
+app.register(cors, {});
 
 import { ApplicationModule } from './Application';
 import { UserRepository } from '@app/domain/repository/user';
