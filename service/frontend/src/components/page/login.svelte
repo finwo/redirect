@@ -24,7 +24,7 @@
   <label for=password>Password</label>
   <input type=password name=password disabled={working}>
   <div>
-    <a>Forgot password (tbd)</a>
+    <a href="#!">Forgot password (tbd)</a>
     <br/>
     <br/>
   </div>
@@ -33,6 +33,9 @@
 
 <style>
   form {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 1rem;
     width: 20rem;
     max-width: 100%;
     margin: 5rem auto 0 auto;
