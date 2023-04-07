@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "@finwo/digest-pbkdf2": "^1.0.2",
+    "@finwo/observer": "^1.0.1",
     "buffer": "^6.0.3",
     "esbuild": "^0.17.15",
     "esbuild-svelte": "^0.7.3",

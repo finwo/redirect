@@ -1,13 +1,16 @@
 import { writable } from 'svelte/store';
+import { syncedObject } from './storage';
 
 const Buff       = ('function' === typeof Buffer) ? Buffer : require('buffer').Buffer;
 const { PBKDF2 } = require('@finwo/digest-pbkdf2');
 const supercop   = require('supercop');
 
+const apiAuth    = syncedObject<Record<string,string>>('api_auth');
 const apiServer  = 'http://localhost:5000';
 
 export const isLoading  = writable(true);
 export const isLoggedIn = writable(false);
+export const user       = writable(null);
 
 export const performLogin = async (username, password) => {
 
@@ -26,7 +29,7 @@ export const performLogin = async (username, password) => {
   const signature = await keypair.sign(message);
 
   // Fetch server-signed auth token
-  const tokenData = await fetch(`${apiServer}/v1/auth`, {
+  const tokenResponse = await (await fetch(`${apiServer}/v1/auth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -36,30 +39,21 @@ export const performLogin = async (username, password) => {
       sig: signature.toString('base64'),
       at: timecode,
     })
-  });
+  })).json();
 
-  console.log({
-    timecode,
-    message,
-    signature,
-    tokenData,
-  });
+  // Update the actual token
+  apiAuth.token = tokenResponse.token;
 
-  // TODO: fetch current user
+  // Retrieve the current user
+  const userResponse = await (await fetch(`${apiServer}/v1/users/self`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${apiAuth.token}`,
+    },
+  })).json();
 
-  // DEBUG
-  isLoggedIn.set(true);
-
-  // console.log({ keypair, pubkey: keypair.publicKey.toString('base64') });
-
-    // return new Promise(resolve => {
-    //   (new PBKDF2(password, this.username, num_iterations, 32))
-    // });
-
-
-
-
-
+  user.set(userResponse.user);
+  isLoggedIn.set(!!userResponse.user);
 };
 
 
@@ -69,5 +63,4 @@ export const performLogin = async (username, password) => {
 
 setTimeout(() => {
   isLoading.set(false);
-  console.log('called');
 }, 1);
