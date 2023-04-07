@@ -2,13 +2,45 @@ import { keypair } from '@config/authentication';
 import base64url from 'base64url';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-export type AuthData = {
-  auth: false | {
+export type AuthenticatedData = {
+  auth: {
     method: string;
+    token : {
+      header: {
+        alg: string;
+        typ: string;
+      },
+      body  : {
+        sub: string;
+        iat: number;
+        exp: number;
+      },
+    },
   };
 };
 
-export const detectAuthentication = async (req: FastifyRequest, res: FastifyReply, next: ()=>void) => {
+export type UnauthenticatedData = {
+  auth: false;
+};
+
+export type AuthData = AuthenticatedData | UnauthenticatedData;
+
+export const requireAuthentication = async (req: FastifyRequest & AuthData, res: FastifyReply, next: ()=>void) => {
+  detectAuthentication(req, res, () => {
+    if (!req.auth) {
+      res.status(403);
+      return res.send({
+        statusCode : 403,
+        code       : 'RDR_ERR_PERMISSION_DENIED',
+        error      : 'Permission denied',
+        message    : 'Permission denied',
+      });
+    }
+    next();
+  });
+};
+
+export const detectAuthentication = async (req: FastifyRequest & AuthData, res: FastifyReply, next: ()=>void) => {
   Object.defineProperty(req, 'auth', { value: false, enumerable: true, writable: true });
 
   try {
