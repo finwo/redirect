@@ -12,55 +12,69 @@ export const isLoading  = writable(true);
 export const isLoggedIn = writable(false);
 export const user       = writable(null);
 
-export const performLogin = async (username, password) => {
+const http = {
+  async _call(method: string, path: string, data: object, includeToken: boolean = false) {
+    const opts: any = { method, headers: {} };
+    if (apiAuth.token) {
+      opts.headers['Authorization'] = `Bearer ${apiAuth.token}`;
+    }
+    if (data) {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(data);
+    }
+    return (await fetch(`${apiServer}${path}`, opts)).json();
+  },
+  _get(path: string, includeToken: boolean = false) {
+    return http._call('GET', path, null, includeToken);
+  },
+  _post(path: string, data: object, includeToken: boolean = false) {
+    return http._call('POST', path, data, includeToken);
+  },
 
-  // Generate le keypair
-  const keypair = await new Promise(resolve => {
-    (new PBKDF2(password, username, 4096, 32))
-      .deriveKey(()=>{}, (key: string) => {
-        const seed  = Buff.from(key, 'hex');
-        resolve(supercop.createKeyPair(seed));
-      });
-  });
+  async login(username, password) {
 
-  // Build signed message
-  const timecode  = Math.floor(Date.now() / 1000);
-  const message   = `${timecode}|${username}|${timecode}`;
-  const signature = await keypair.sign(message);
+    // Generate le keypair
+    const keypair = await new Promise(resolve => {
+      (new PBKDF2(password, username, 4096, 32))
+        .deriveKey(()=>{}, (key: string) => {
+          const seed  = Buff.from(key, 'hex');
+          resolve(supercop.createKeyPair(seed));
+        });
+    });
 
-  // Fetch server-signed auth token
-  const tokenResponse = await (await fetch(`${apiServer}/v1/auth`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+    // Build signed message
+    const timecode  = Math.floor(Date.now() / 1000);
+    const message   = `${timecode}|${username}|${timecode}`;
+    const signature = await keypair.sign(message);
+
+    // Fetch server-signed auth token
+    const tokenResponse = await http._post('/v1/auth', {
       usr: username,
       sig: signature.toString('base64'),
       at: timecode,
-    })
-  })).json();
+    }, false);
 
-  // Update the actual token
-  apiAuth.token = tokenResponse.token;
+    // Update the actual token
+    apiAuth.token = tokenResponse.token;
+    await http.updateLoginStatus();
+  },
 
-  // Retrieve the current user
-  const userResponse = await (await fetch(`${apiServer}/v1/users/self`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${apiAuth.token}`,
-    },
-  })).json();
+  async updateLoginStatus() {
+    // Retrieve the current user
+    const userResponse = await http._get('/v1/users/self');
+    user.set(userResponse.user);
+    isLoggedIn.set(!!userResponse.user);
+  },
 
-  user.set(userResponse.user);
-  isLoggedIn.set(!!userResponse.user);
 };
 
+export const performLogin = (username: string, password: string) => {
+  return http.login(username, password);
+}
 
-;(() => {
-  // Do login check here
-})();
+isLoggedIn.subscribe(value => console.log(value));
 
-setTimeout(() => {
-  isLoading.set(false);
-}, 1);
+http.updateLoginStatus()
+  .then(() => {
+    isLoading.set(false);
+  });
