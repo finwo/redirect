@@ -1,7 +1,7 @@
 import { UserRepository } from '@app/domain/repository/user';
 import { Controller, Req, Res, Post, Get } from '@finwo/router';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { window_time, keypair } from '@config/authentication';
+import { window_time, keypair, token_expiry } from '@config/authentication';
 import base64url from 'base64url';
 
 const supercop = require('supercop');
@@ -92,7 +92,7 @@ export class AuthController {
 
     // Build le token
     const tokenHeader    = base64url.encode(JSON.stringify({ alg: 'ED25519', typ: 'JWTISH' }));
-    const tokenBody      = base64url.encode(JSON.stringify({ sub: bdy.usr  , iat: now      }));
+    const tokenBody      = base64url.encode(JSON.stringify({ sub: bdy.usr  , iat: now     , exp: now + token_expiry }));
     // @ts-ignore The `supercop` library isn't typed (yet)
     const tokenSignature = await (await keypair).sign(`${tokenHeader}.${tokenBody}`);
 

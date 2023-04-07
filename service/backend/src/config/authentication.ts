@@ -3,6 +3,7 @@ const supercop   = require('supercop');
 
 export const num_iterations = 4096;
 export const window_time    = 150;
+export const token_expiry   = 7200;
 
 // Generate a promise to a keypair we'll use for authentication clients
 export const keypair = new Promise(resolve => {
