@@ -38,6 +38,7 @@ app.register(plugin, controllers);
 
   // And start listening
   app.listen({
+    host: '0.0.0.0',
     port: parseInt(process.env.PORT || '5000'),
   }, (err: any, addr: any) => {
     if (err) throw err;

@@ -6,7 +6,7 @@ const { PBKDF2 } = require('@finwo/digest-pbkdf2');
 const supercop   = require('supercop');
 
 const apiAuth    = syncedObject<Record<string,string>>('api_auth');
-const apiServer  = 'http://localhost:5000';
+const apiServer  = `http://api.${document.location.hostname}`;
 
 export const isLoading  = writable(true);
 export const isLoggedIn = writable(false);
