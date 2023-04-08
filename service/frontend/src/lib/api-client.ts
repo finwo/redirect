@@ -70,7 +70,12 @@ const http = {
 
 export const performLogin = (username: string, password: string) => {
   return http.login(username, password);
-}
+};
+
+export const logout = () => {
+  apiAuth.token = null;
+  http.updateLoginStatus();
+};
 
 export const listPorts = (page = 0) => {
   const limit = 20;
