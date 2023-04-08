@@ -8,7 +8,6 @@
   import Spinner       from './components/loader/spinner.svelte';
   import HomePage      from './components/page/home.svelte';
   import LoginPage     from './components/page/login.svelte';
-  import DashboardPage from './components/page/login.svelte';
   import NotFoundPage  from './components/page/not-found.svelte';
 
   function authGuard() {
@@ -16,9 +15,8 @@
   }
 
   const routes = [
-    { name: '/'        , component: HomePage     , layout: DefaultLayout },
-    { name: 'dashboard', component: DashboardPage, layout: DefaultLayout, onlyIf: { guard: authGuard, redirect: '/login' } },
-    { name: '404'      , component: NotFoundPage , layout: DefaultLayout },
+    { name: '/'  , component: HomePage     , layout: DefaultLayout },
+    { name: '404', component: NotFoundPage , layout: DefaultLayout },
   ];
 
 
