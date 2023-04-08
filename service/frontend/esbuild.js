@@ -54,10 +54,7 @@ esbuild
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style>
-      * { box-sizing: border-box; }
-      html, body { height: 100%; }
-    </style>
+    <link rel="stylesheet" href="/global.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     ${styles.map(name => `<link rel="stylesheet" href="${name}"/>`).join('\n    ')}
   </head>
@@ -66,6 +63,8 @@ esbuild
   </body>
 </html>
 `);
+
+    fs.copyFileSync('./src/global.css', `${config.outdir}/global.css`);
 
     // fs.writeFileSync(config.outdir + `/index.bundled.html`, `<!DOCTYPE html>
 // <html>
