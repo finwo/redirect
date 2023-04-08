@@ -72,7 +72,10 @@ export const performLogin = (username: string, password: string) => {
   return http.login(username, password);
 }
 
-isLoggedIn.subscribe(value => console.log(value));
+export const listPorts = (page = 0) => {
+  const limit = 20;
+  return http._get(`/v1/ports?limit=${limit}&offset=${limit*page}`);
+};
 
 http.updateLoginStatus()
   .then(() => {

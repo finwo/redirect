@@ -3,12 +3,6 @@ import { UserRepository } from '@app/domain/repository/user';
 import { RepositoryListResponse } from '@core/repository-list-response';
 import { Service } from '@finwo/di';
 import { Repository } from 'typeorm';
-// import * as path from 'path';
-// import * as fs from 'fs';
-// import { User } from '@pico/domain/model/user.model';
-// import { UserRepository } from '@pico/domain/repository/user.repository';
-
-// const storageFile = path.resolve(__dirname, '../../../../../data/users.json');
 
 @Service()
 export class UserTypeormRepository extends UserRepository {
