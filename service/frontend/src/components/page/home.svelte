@@ -1,11 +1,12 @@
 <script>
-  import { listPorts, editPort } from '../../lib/api-client';
+  import { listPorts, createPort, editPort } from '../../lib/api-client';
   import { PlusSquare, Edit, Delete } from 'lucide-svelte';
 
   let ports = [];
 
-  let editPortId   = '';
-  let editPortData = { ingress: '', egress: '' };
+  let createPortData = { ingress: '', egress: '' };
+  let editPortId     = '';
+  let editPortData   = { ingress: '', egress: '' };
 
   function openEditPortDialog(port) {
     return () => {
@@ -13,6 +14,17 @@
       editPortData = { ...port };
       editPortDialog.showModal();
     };
+  }
+
+  function openCreatePortDialog() {
+    createPortData = { ingress: '', egress: '' };
+    createPortDialog.showModal();
+  }
+
+  async function handleCreatePortDialog() {
+    await createPort(createPortData);
+    createPortDialog.close();
+    loadPorts();
   }
 
   async function handleEditPortDialog() {
@@ -43,7 +55,7 @@
         <th>Ingress</th>
         <th>Egress</th>
         <th>
-          <button>
+          <button on:click={openCreatePortDialog}>
             <PlusSquare class="vmiddle"/>
           </button>
         </th>
@@ -76,6 +88,24 @@
     <div class="form-group">
       <label for=editEgress>Egress</label>
       <input type=text name=editEgress bind:value={editPortData.egress}>
+    </div>
+    <br />
+    <button type="submit">Update</button>
+  </form>
+</dialog>
+
+<dialog id=createPortDialog on:click={closeDialogOnClick(createPortDialog)}>
+  <header>
+    Create port
+  </header>
+  <form on:submit|preventDefault={handleCreatePortDialog}>
+    <div class="form-group">
+      <label for=createIngress>Ingress</label>
+      <input type=text name=createIngress bind:value={createPortData.ingress}>
+    </div>
+    <div class="form-group">
+      <label for=createEgress>Egress</label>
+      <input type=text name=createEgress bind:value={createPortData.egress}>
     </div>
     <br />
     <button type="submit">Update</button>

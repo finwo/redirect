@@ -86,6 +86,10 @@ export const listPorts = (page = 0, offset = -1) => {
   return http._get(`/v1/ports?limit=${limit}&offset=${offset}`);
 };
 
+export const createPort = (newData) => {
+  return http._post(`/v1/ports`, newData);
+};
+
 export const editPort = (key, newData) => {
   return http._put(`/v1/ports/${key}`, newData);
 };

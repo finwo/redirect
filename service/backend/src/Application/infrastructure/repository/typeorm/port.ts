@@ -35,4 +35,11 @@ export class PortTypeormRepository extends PortRepository {
     return repo.findOneBy({ ingress: newKey });
   }
 
+  public async create(data: Partial<Port>): Promise<Port | null> {
+    const repo = this.getTypeormRepository();
+    const port = repo.create(data);
+    await repo.insert(port);
+    return port;
+  }
+
 }

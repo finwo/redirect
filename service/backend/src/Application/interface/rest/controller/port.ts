@@ -63,4 +63,37 @@ export class PortController {
     };
   }
 
+  @Post()
+  @Middleware(requireAuthentication)
+  async createPort(
+    @Req() req: FastifyRequest & AuthenticatedData,
+    @Res() res: FastifyReply,
+  ) {
+    const bdy = req.body as Partial<Port>;
+
+    // Sanity checking
+    if (
+      (!req.body                      ) ||
+      ('object' !== typeof bdy        ) ||
+      ('string' !== typeof bdy.ingress) ||
+      ('string' !== typeof bdy.egress )
+    ) {
+      res.status(422);
+      return res.send({
+        statusCode : 422,
+        code       : 'RDR_ERR_UNPROCESSABLE_ENTITY',
+        error      : 'Unprocessable Entity',
+        message    : 'Unprocessable Entity',
+      });
+    }
+
+    const createdPort = await this.portRepository.create(bdy);
+
+    return {
+      ok: true,
+      port: createdPort,
+    };
+  }
+
+
 }
