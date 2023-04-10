@@ -1,7 +1,7 @@
 // import { UserRepository } from '@app/domain/repository/user';
 import { Port } from '@app/domain/model/port';
 import { PortRepository } from '@app/domain/repository/port';
-import { Controller, Req, Post, Get, Middleware, Res, Put } from '@finwo/router';
+import { Controller, Req, Post, Get, Middleware, Res, Put, Delete } from '@finwo/router';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthenticatedData, requireAuthentication } from '../../../../Authentication/middleware';
 // import { FastifyReply, FastifyRequest } from 'fastify';
@@ -92,6 +92,22 @@ export class PortController {
     return {
       ok: true,
       port: createdPort,
+    };
+  }
+
+  @Delete('/:portId')
+  @Middleware(requireAuthentication)
+  async deletePort(
+    @Req() req: FastifyRequest & AuthenticatedData,
+    @Res() res: FastifyReply,
+  ) {
+    const params = req.params as Record<string, string>;
+    const pid    = params.portId;
+
+    await this.portRepository.delete(pid);
+
+    return {
+      ok: true,
     };
   }
 

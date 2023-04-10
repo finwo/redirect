@@ -33,6 +33,9 @@ const http = {
   _put(path: string, data: object) {
     return http._call('PUT', path, data);
   },
+  _delete(path: string) {
+    return http._call('DELETE', path, null);
+  },
 
   async login(username, password) {
 
@@ -92,6 +95,10 @@ export const createPort = (newData) => {
 
 export const editPort = (key, newData) => {
   return http._put(`/v1/ports/${key}`, newData);
+};
+
+export const deletePort = (key) => {
+  return http._delete(`/v1/ports/${key}`);
 };
 
 http.updateLoginStatus()

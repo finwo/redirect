@@ -1,5 +1,5 @@
 <script>
-  import { listPorts, createPort, editPort } from '../../lib/api-client';
+  import { listPorts, createPort, editPort, deletePort } from '../../lib/api-client';
   import { PlusSquare, Edit, Delete } from 'lucide-svelte';
 
   let ports = [];
@@ -7,6 +7,8 @@
   let createPortData = { ingress: '', egress: '' };
   let editPortId     = '';
   let editPortData   = { ingress: '', egress: '' };
+  let deletePortId   = '';
+  let deletePortData = { ingress: '', egress: '' };
 
   function openEditPortDialog(port) {
     return () => {
@@ -16,20 +18,34 @@
     };
   }
 
+  function openDeletePortDialog(port) {
+    return () => {
+      deletePortId   = port.ingress;
+      deletePortData = { ...port };
+      deletePortDialog.showModal();
+    };
+  }
+
   function openCreatePortDialog() {
     createPortData = { ingress: '', egress: '' };
     createPortDialog.showModal();
   }
 
   async function handleCreatePortDialog() {
-    await createPort(createPortData);
     createPortDialog.close();
+    await createPort(createPortData);
     loadPorts();
   }
 
   async function handleEditPortDialog() {
-    await editPort(editPortId, editPortData);
     editPortDialog.close();
+    await editPort(editPortId, editPortData);
+    loadPorts();
+  }
+
+  async function handleDeletePortDialog(event) {
+    if (event.target.returnValue !== 'confirm') return;
+    await deletePort(deletePortId);
     loadPorts();
   }
 
@@ -68,7 +84,7 @@
           <td>{port.egress}</td>
           <td>
             <button on:click={openEditPortDialog(port)} ><Edit class="vmiddle"/></button>
-            <button><Delete class="vmiddle"/></button>
+            <button on:click={openDeletePortDialog(port)}><Delete class="vmiddle"/></button>
           </td>
         </tr>
       {/each}
@@ -108,7 +124,20 @@
       <input type=text name=createEgress bind:value={createPortData.egress}>
     </div>
     <br />
-    <button type="submit">Update</button>
+    <button type="submit">Create</button>
+  </form>
+</dialog>
+
+<dialog id=deletePortDialog on:click={closeDialogOnClick(deletePortDialog)} on:close={handleDeletePortDialog}>
+  <header>
+    Delete port
+  </header>
+  <form method="dialog">
+    Are you sure you want to delete the port for <code>{deletePortData.ingress}</code>?<br/><br/>
+    <center>
+      <button type="submit" value="cancel">Cancel</button>
+      <button type="submit" value="confirm">Delete</button>
+    </center>
   </form>
 </dialog>
 
