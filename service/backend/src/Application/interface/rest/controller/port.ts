@@ -1,6 +1,7 @@
 // import { UserRepository } from '@app/domain/repository/user';
+import { Port } from '@app/domain/model/port';
 import { PortRepository } from '@app/domain/repository/port';
-import { Controller, Req, Post, Get, Middleware, Res } from '@finwo/router';
+import { Controller, Req, Post, Get, Middleware, Res, Put } from '@finwo/router';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthenticatedData, requireAuthentication } from '../../../../Authentication/middleware';
 // import { FastifyReply, FastifyRequest } from 'fastify';
@@ -12,23 +13,10 @@ export class PortController {
     private portRepository: PortRepository
   ) {}
 
-  // @Get()
-  // @Middleware(detectAuthentication)
-  // async getUsers(
-  //   @Req() req: FastifyRequest & AuthData,
-  // ) {
-
-    // return {
-    //   ok   : true,
-    //   ...(await this.userRepository.find(opts))
-    // };
-  // }
-
   @Get()
   @Middleware(requireAuthentication)
   async listPorts(
-    @Req() req: FastifyRequest & AuthenticatedData,
-    @Res() res: FastifyReply
+    @Req() req: FastifyRequest & AuthenticatedData
   ) {
     const opts: {limit?:number,offset?:number} = {};
     const query = req.query as Record<string, string>;
@@ -41,12 +29,38 @@ export class PortController {
     };
   }
 
-  // // Provides POST route for domain method
-  // @Post()
-  // async createUser(@Req() req: FastifyRequest) {
-  //   return {
-  //     ok   : true,
-  //   };
-  // }
+  @Put('/:portId')
+  @Middleware(requireAuthentication)
+  async editPort(
+    @Req() req: FastifyRequest & AuthenticatedData,
+    @Res() res: FastifyReply,
+  ) {
+    const params = req.params as Record<string, string>;
+    const bdy    = req.body as Partial<Port>;
+    const pid    = params.portId;
+
+    // Sanity checking
+    if (
+      (!req.body                      ) ||
+      ('object' !== typeof bdy        ) ||
+      ('string' !== typeof bdy.ingress) ||
+      ('string' !== typeof bdy.egress )
+    ) {
+      res.status(422);
+      return res.send({
+        statusCode : 422,
+        code       : 'RDR_ERR_UNPROCESSABLE_ENTITY',
+        error      : 'Unprocessable Entity',
+        message    : 'Unprocessable Entity',
+      });
+    }
+
+    const updatedPort = await this.portRepository.update(pid, bdy);
+
+    return {
+      ok: true,
+      port: updatedPort,
+    };
+  }
 
 }

@@ -13,7 +13,7 @@ export class AuthController {
   ) {}
 
   @Post()
-  async getUsers(
+  async getAuthToken(
     @Req() req: FastifyRequest,
     @Res() res: FastifyReply,
   ) {

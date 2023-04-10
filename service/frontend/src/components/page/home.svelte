@@ -1,14 +1,24 @@
 <script>
-  import { listPorts } from '../../lib/api-client';
+  import { listPorts, editPort } from '../../lib/api-client';
   import { PlusSquare, Edit, Delete } from 'lucide-svelte';
 
   let ports = [];
-  listPorts().then(response => ports = response.port.data);
+
+  let editPortId   = '';
+  let editPortData = { ingress: '', egress: '' };
 
   function openEditPortDialog(port) {
     return () => {
-       editPortDialog.showModal();
+      editPortId   = port.ingress;
+      editPortData = { ...port };
+      editPortDialog.showModal();
     };
+  }
+
+  async function handleEditPortDialog() {
+    await editPort(editPortId, editPortData);
+    editPortDialog.close();
+    loadPorts();
   }
 
   function closeDialogOnClick(el) {
@@ -19,7 +29,11 @@
     }
   }
 
+  function loadPorts() {
+    listPorts().then(response => ports = response.port.data);
+  }
 
+  loadPorts();
 </script>
 
 <main>
@@ -52,10 +66,19 @@
 
 <dialog id=editPortDialog on:click={closeDialogOnClick(editPortDialog)}>
   <header>
-    Hello World
+    Edit port
   </header>
-  <form>
-    FooBar
+  <form on:submit|preventDefault={handleEditPortDialog}>
+    <div class="form-group">
+      <label for=editIngress>Ingress</label>
+      <input type=text name=editIngress bind:value={editPortData.ingress}>
+    </div>
+    <div class="form-group">
+      <label for=editEgress>Egress</label>
+      <input type=text name=editEgress bind:value={editPortData.egress}>
+    </div>
+    <br />
+    <button type="submit">Update</button>
   </form>
 </dialog>
 

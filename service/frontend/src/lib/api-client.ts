@@ -13,7 +13,7 @@ export const isLoggedIn = writable(false);
 export const user       = writable(null);
 
 const http = {
-  async _call(method: string, path: string, data: object, includeToken: boolean = false) {
+  async _call(method: string, path: string, data: object) {
     const opts: any = { method, headers: {} };
     if (apiAuth.token) {
       opts.headers['Authorization'] = `Bearer ${apiAuth.token}`;
@@ -24,11 +24,14 @@ const http = {
     }
     return (await fetch(`${apiServer}${path}`, opts)).json();
   },
-  _get(path: string, includeToken: boolean = false) {
-    return http._call('GET', path, null, includeToken);
+  _get(path: string) {
+    return http._call('GET', path, null);
   },
-  _post(path: string, data: object, includeToken: boolean = false) {
-    return http._call('POST', path, data, includeToken);
+  _post(path: string, data: object) {
+    return http._call('POST', path, data);
+  },
+  _put(path: string, data: object) {
+    return http._call('PUT', path, data);
   },
 
   async login(username, password) {
@@ -77,9 +80,14 @@ export const logout = () => {
   http.updateLoginStatus();
 };
 
-export const listPorts = (page = 0) => {
+export const listPorts = (page = 0, offset = -1) => {
   const limit = 20;
-  return http._get(`/v1/ports?limit=${limit}&offset=${limit*page}`);
+  if (offset < 0) offset = limit * page;
+  return http._get(`/v1/ports?limit=${limit}&offset=${offset}`);
+};
+
+export const editPort = (key, newData) => {
+  return http._put(`/v1/ports/${key}`, newData);
 };
 
 http.updateLoginStatus()

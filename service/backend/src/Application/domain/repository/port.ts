@@ -5,4 +5,5 @@ import { RepositoryListResponse } from '@core/repository-list-response';
 @Service()
 export abstract class PortRepository {
   public abstract find(opts?: { limit?: number, offset?: number }): Promise<RepositoryListResponse<Port>>;
+  public abstract update(primaryKey: string, data: Partial<Port>): Promise<Port | null>;
 }

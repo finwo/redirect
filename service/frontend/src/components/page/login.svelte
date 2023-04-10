@@ -19,10 +19,14 @@
 </script>
 
 <form on:submit|preventDefault={handleLogin}>
-  <label for=username>Username</label>
-  <input type=text name=username disabled={working}>
-  <label for=password>Password</label>
-  <input type=password name=password disabled={working}>
+  <div class="form-group">
+    <label for=username>Username</label>
+    <input type=text name=username disabled={working}>
+  </div>
+  <div class="form-group">
+    <label for=password>Password</label>
+    <input type=password name=password disabled={working}>
+  </div>
   <div>
     <a href="#!">Forgot password (tbd)</a>
     <br/>

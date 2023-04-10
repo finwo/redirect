@@ -28,4 +28,11 @@ export class PortTypeormRepository extends PortRepository {
     };
   }
 
+  public async update(primaryKey: string, data: Partial<Port>): Promise<Port | null> {
+    const repo = this.getTypeormRepository();
+    await repo.update(primaryKey, data);
+    const newKey = data.ingress || primaryKey;
+    return repo.findOneBy({ ingress: newKey });
+  }
+
 }
