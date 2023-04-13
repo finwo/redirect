@@ -5,8 +5,17 @@ const Buff       = ('function' === typeof Buffer) ? Buffer : require('buffer').B
 const { PBKDF2 } = require('@finwo/digest-pbkdf2');
 const supercop   = require('supercop');
 
-const apiAuth    = syncedObject<Record<string,string>>('api_auth');
-const apiServer  = `http://api.${document.location.hostname}`;
+const apiAuth = syncedObject<Record<string,string>>('api_auth');
+const baseUrl: Promise<string> = (async () => {
+  const manifestResponse = await fetch('/manifest.json');
+  const manifestData     = await manifestResponse.json();
+  const manifestEntry = manifestData.find(entry => {
+    if (entry.type !== 'api') return false;
+    if (entry.name !== 'redirection-service') return false;
+    return true;
+  });
+  return manifestEntry.url;
+})();
 
 export const isLoading  = writable(true);
 export const isLoggedIn = writable(false);
@@ -22,7 +31,7 @@ const http = {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(data);
     }
-    return (await fetch(`${apiServer}${path}`, opts)).json();
+    return (await fetch(`${await baseUrl}${path}`, opts)).json();
   },
   _get(path: string) {
     return http._call('GET', path, null);
