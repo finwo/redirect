@@ -1,7 +1,7 @@
 const { PBKDF2 } = require('@finwo/digest-pbkdf2');
 const supercop   = require('supercop');
 
-export const num_iterations = 4096;
+export const num_iterations = 1024;
 export const window_time    = 150;
 export const token_expiry   = 7200;
 

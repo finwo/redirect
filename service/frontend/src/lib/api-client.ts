@@ -50,7 +50,7 @@ const http = {
 
     // Generate le keypair
     const keypair = await new Promise(resolve => {
-      (new PBKDF2(password, username, 4096, 32))
+      (new PBKDF2(password, username, 1024, 32))
         .deriveKey(()=>{}, (key: string) => {
           const seed  = Buff.from(key, 'hex');
           resolve(supercop.createKeyPair(seed));
