@@ -27,6 +27,11 @@ app.get('/manifest.json', (req, res) => {
   res.send(contents);
 });
 
+// We're a single-page app, act like it
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(docroot, 'index.html'));
+})
+
 // Start the actual server
 app.listen(port, () => {
   console.log(`Listening on :${port}`);
