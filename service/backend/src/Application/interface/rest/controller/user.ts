@@ -1,6 +1,6 @@
 import { User } from '@app/domain/model/user';
 import { UserRepository } from '@app/domain/repository/user';
-import { Controller, Req, Post, Get, Middleware, Res, Delete } from '@finwo/router';
+import { Controller, Req, Post, Get, Middleware, Res, Delete, Put } from '@finwo/router';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthData, requireAuthentication, AuthenticatedData } from '../../../../Authentication/middleware';
 import { window_time } from '@config/authentication';
@@ -74,10 +74,10 @@ export class UserController {
       (Math.abs(now - bdy.timecode) > window_time)
     ) {
       return {
-        statusCode : 403,
-        code       : 'RDR_ERR_AUTHDATA_WDW_RANGE',
-        error      : 'Forbidden',
-        message    : `Forbidden: Message signed outside of allowed window`,
+        statusCode : 422,
+        code       : 'RDR_ERR_WDW_RANGE',
+        error      : 'Unprocessable Entity',
+        message    : `Unprocessable Entity: Timecode out of allowed window`,
       };
     }
 
@@ -89,10 +89,10 @@ export class UserController {
     const signatureValid = await userpair.verify(Buffer.from(bdy.sig, 'base64'), message);
     if (!signatureValid) {
       return {
-        statusCode : 403,
-        code       : 'RDR_ERR_PERMISSION_DENIED',
-        error      : 'Permission denied',
-        message    : 'Permission denied',
+        statusCode : 422,
+        code       : 'RDR_ERR_SIG_INVALID',
+        error      : 'Unprocessable Entity',
+        message    : 'Unprocessable Entity: Invalid signature',
       };
     }
 
@@ -104,6 +104,91 @@ export class UserController {
 
     return {
       ok: true,
+    };
+  }
+
+  @Put('/:userId')
+  @Middleware(requireAuthentication)
+  async editUser(
+    @Req() req: FastifyRequest & AuthenticatedData,
+    @Res() res: FastifyReply,
+  ) {
+    const params = req.params as Record<string, string>;
+    const bdy    = req.body as (Partial<User> & { sig ?: string; timecode?: number});
+    const uid    = params.userId;
+
+    // Sanity checking
+    if (
+      (!req.body                       ) ||
+      ('object' !== typeof bdy         ) ||
+      ('string' !== typeof bdy.username)
+    ) {
+      res.status(422);
+      return res.send({
+        statusCode : 422,
+        code       : 'RDR_ERR_UNPROCESSABLE_ENTITY',
+        error      : 'Unprocessable Entity',
+        message    : 'Unprocessable Entity',
+      });
+    }
+
+    const newUserData: Partial<User> = { username: bdy.username };
+
+    // Require more fields if updating the password
+    if (bdy.pubkey && 'string' === typeof bdy.pubkey) {
+
+      // Sanity checking
+      if (
+        ('number' !== typeof bdy.timecode) ||
+        ('string' !== typeof bdy.sig     )
+      ) {
+        res.status(422);
+        return res.send({
+          statusCode : 422,
+          code       : 'RDR_ERR_UNPROCESSABLE_ENTITY',
+          error      : 'Unprocessable Entity',
+          message    : 'Unprocessable Entity',
+        });
+      }
+
+      // Verify timecode
+      const now = Math.floor(Date.now() / 1000);
+      if (
+        ('number' !== typeof bdy.timecode) ||
+        (Math.abs(now - bdy.timecode) > window_time)
+      ) {
+        return {
+          statusCode : 422,
+          code       : 'RDR_ERR_WDW_RANGE',
+          error      : 'Unprocessable Entity',
+          message    : `Unprocessable Entity: Timecode out of allowed window`,
+        };
+      }
+
+      // Verify signature
+      const userpair = supercop.keyPairFrom({
+        publicKey: Buffer.from(bdy.pubkey, 'base64'),
+      });
+      const message        = `${bdy.timecode}|${bdy.username}|${bdy.timecode}`;
+      const signatureValid = await userpair.verify(Buffer.from(bdy.sig, 'base64'), message);
+      if (!signatureValid) {
+        return {
+          statusCode : 422,
+          code       : 'RDR_ERR_SIG_INVALID',
+          error      : 'Unprocessable Entity',
+          message    : 'Unprocessable Entity: Invalid signature',
+        };
+      }
+
+      // Here = valid
+      newUserData.pubkey = bdy.pubkey;
+    }
+
+    const updatedUser = await this.userRepository.update(uid, newUserData);
+
+    return {
+      ok: true,
+      user: updatedUser,
     };
   }
 

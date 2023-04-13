@@ -136,6 +136,23 @@ export const createUser = async (username, password) => {
   });
 };
 
+export const editUser = async (key, data) => {
+  const postData: Record<string, string | number> = { username: data.username };
+
+  // Add password required fields if updating the password
+  if (data.password && data.password.length) {
+    const keypair   = await generateKeypair(data.username, data.password);
+    const timecode  = Math.floor(Date.now() / 1000);
+    const message   = `${timecode}|${data.username}|${timecode}`;
+    const signature = await keypair.sign(message);
+    postData.timecode = timecode;
+    postData.pubkey   = keypair.publicKey.toString('base64');
+    postData.sig      = signature.toString('base64');
+  }
+
+  return http._put(`/v1/users/${key}`, postData);
+};
+
 export const deleteUser = (key) => {
   return http._delete(`/v1/users/${key}`);
 };

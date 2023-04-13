@@ -1,13 +1,15 @@
 <script>
   import { onDestroy } from 'svelte';
   import { PlusSquare, Edit, Delete } from 'lucide-svelte';
-  import { user, listUsers, createUser, deleteUser } from '../../lib/api-client';
+  import { user, listUsers, createUser, editUser, deleteUser } from '../../lib/api-client';
 
   let authUser = {};
   onDestroy(user.subscribe(value => authUser = value || {}));
 
   let users    = [];
   let createUserData = { username: '', password: '' };
+  let editUserId     = '';
+  let editUserData   = { username: '', password: '' };
   let deleteUserData = { username: '' };
 
   function loadUsers() {
@@ -30,6 +32,22 @@
   async function handleCreateUserDialog() {
     createUserDialog.close();
     await createUser(createUserData.username, createUserData.password);
+    loadUsers();
+  }
+
+  function openEditUserDialog(user) {
+    return () => {
+      editUserId   = user.username;
+      editUserData = { ...user, password: '' };
+      editUserDialog.showModal();
+    };
+  }
+
+  async function handleEditUserDialog() {
+    // TODO: require password update on username update
+    editUserDialog.close();
+    if (!editUserData.password) editUserData.password = false;
+    await editUser(editUserId, editUserData);
     loadUsers();
   }
 
@@ -66,7 +84,7 @@
         <tr>
           <td>{listUser.username}</td>
           <td>
-            <button><Edit class="vmiddle"/></button>
+            <button on:click={openEditUserDialog(listUser)}><Edit class="vmiddle"/></button>
             <button disabled={listUser.username == authUser.username} on:click={openDeleteUserDialog(listUser)}><Delete class="vmiddle"/></button>
           </td>
         </tr>
@@ -85,11 +103,29 @@
       <input type=text name=createUsername bind:value={createUserData.username}>
     </div>
     <div class="form-group">
-      <label for=createEgress>Password</label>
+      <label for=createPassword>Password</label>
       <input type=password name=createPassword bind:value={createUserData.password}>
     </div>
     <br />
     <button type="submit">Create</button>
+  </form>
+</dialog>
+
+<dialog id=editUserDialog on:click={closeDialogOnClick(editUserDialog)}>
+  <header>
+    Edit user
+  </header>
+  <form on:submit|preventDefault={handleEditUserDialog}>
+    <div class="form-group">
+      <label for=editUsername>Username</label>
+      <input type=text name=editUsername bind:value={editUserData.username}>
+    </div>
+    <div class="form-group">
+      <label for=editPassword>Password (only enter if updating)</label>
+      <input type=password name=editPassword bind:value={editUserData.password}>
+    </div>
+    <br />
+    <button type="submit">Update</button>
   </form>
 </dialog>
 

@@ -33,6 +33,12 @@ export class UserTypeormRepository extends UserRepository {
     await repo.save(entity);
   }
 
+  public async update(primaryKey: string, data: Partial<User>): Promise<User | null> {
+    const repo = this.getTypeormRepository();
+    await repo.update(primaryKey, data);
+    return this.getByUsername(data.username || primaryKey);
+  }
+
   public async getByUsername(username: string): Promise<User | null> {
     const repo = this.getTypeormRepository();
     return repo.findOneBy({ username });
