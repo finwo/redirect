@@ -136,6 +136,10 @@ export const createUser = async (username, password) => {
   });
 };
 
+export const deleteUser = (key) => {
+  return http._delete(`/v1/users/${key}`);
+};
+
 http.updateLoginStatus()
   .then(() => {
     isLoading.set(false);

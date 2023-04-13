@@ -1,6 +1,6 @@
 import { User } from '@app/domain/model/user';
 import { UserRepository } from '@app/domain/repository/user';
-import { Controller, Req, Post, Get, Middleware, Res } from '@finwo/router';
+import { Controller, Req, Post, Get, Middleware, Res, Delete } from '@finwo/router';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthData, requireAuthentication, AuthenticatedData } from '../../../../Authentication/middleware';
 import { window_time } from '@config/authentication';
@@ -101,6 +101,22 @@ export class UserController {
       username: bdy.username,
       pubkey  : bdy.pubkey,
     });
+
+    return {
+      ok: true,
+    };
+  }
+
+  @Delete('/:userId')
+  @Middleware(requireAuthentication)
+  async deleteUser(
+    @Req() req: FastifyRequest & AuthenticatedData,
+    @Res() res: FastifyReply,
+  ) {
+    const params = req.params as Record<string, string>;
+    const uid    = params.userId;
+
+    await this.userRepository.delete(uid);
 
     return {
       ok: true,

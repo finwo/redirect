@@ -45,4 +45,10 @@ export class UserTypeormRepository extends UserRepository {
     return port;
   }
 
+  public async delete(primaryKey: string): Promise<true> {
+    const repo = this.getTypeormRepository();
+    await repo.delete(primaryKey);
+    return true;
+  }
+
 }
