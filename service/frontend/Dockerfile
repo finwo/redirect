@@ -6,6 +6,13 @@ RUN npm i
 RUN node esbuild.js
 
 FROM node:lts as runner
-COPY --from=builder /app/dist /srv
-RUN npm install --global serve
-CMD serve -s /srv
+WORKDIR /app
+COPY package.json      /app/package.json
+COPY package-lock.json /app/package-lock.json
+COPY util/server.js    /app/util/server.js
+RUN npm ci
+COPY --from=builder /app/dist /app/dist
+
+ENV DOCROOT /app/dist
+
+CMD node util/server.js

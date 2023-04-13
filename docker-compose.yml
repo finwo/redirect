@@ -26,7 +26,7 @@ services:
       VIRTUAL_HOST: redirect.docker
       VIRTUAL_PORT: 4000
     volumes:
-      - ./service/frontend/dist:/srv
+      - ./service/frontend:/app
 
   backend:
     build: service/backend
