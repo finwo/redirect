@@ -5,6 +5,7 @@ import { RepositoryListResponse } from '@core/repository-list-response';
 @Service()
 export abstract class UserRepository {
   public abstract saveUser(entity: User): Promise<void>;
+  public abstract create(data: Partial<User>): Promise<User | null>;
   public abstract find(opts?: { limit?: number, offset?: number }): Promise<RepositoryListResponse<User>>;
   public abstract getByUsername(username: string): Promise<User | null>;
 }

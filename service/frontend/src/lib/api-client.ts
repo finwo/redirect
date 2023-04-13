@@ -21,6 +21,16 @@ export const isLoading  = writable(true);
 export const isLoggedIn = writable(false);
 export const user       = writable(null);
 
+function generateKeypair(username: string, password: string) {
+  return new Promise(resolve => {
+    (new PBKDF2(password, username, 1024, 32))
+      .deriveKey(()=>{}, (key: string) => {
+        const seed  = Buff.from(key, 'hex');
+        resolve(supercop.createKeyPair(seed));
+      });
+  });
+}
+
 const http = {
   async _call(method: string, path: string, data: object) {
     const opts: any = { method, headers: {} };
@@ -49,13 +59,7 @@ const http = {
   async login(username, password) {
 
     // Generate le keypair
-    const keypair = await new Promise(resolve => {
-      (new PBKDF2(password, username, 1024, 32))
-        .deriveKey(()=>{}, (key: string) => {
-          const seed  = Buff.from(key, 'hex');
-          resolve(supercop.createKeyPair(seed));
-        });
-    });
+    const keypair = await generateKeypair(username, password);
 
     // Build signed message
     const timecode  = Math.floor(Date.now() / 1000);
@@ -114,6 +118,22 @@ export const listUsers = (page = 0, offset = -1) => {
   const limit = 20;
   if (offset < 0) offset = limit * page;
   return http._get(`/v1/users?limit=${limit}&offset=${offset}`);
+};
+
+export const createUser = async (username, password) => {
+  const keypair = await generateKeypair(username, password);
+
+  // Build signed message
+  const timecode  = Math.floor(Date.now() / 1000);
+  const message   = `${timecode}|${username}|${timecode}`;
+  const signature = await keypair.sign(message);
+
+  return http._post(`/v1/users`, {
+    username,
+    timecode,
+    pubkey : keypair.publicKey.toString('base64'),
+    sig    : signature.toString('base64'),
+  });
 };
 
 http.updateLoginStatus()

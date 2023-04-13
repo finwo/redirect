@@ -1,11 +1,35 @@
 <script>
+  import { onDestroy } from 'svelte';
   import { PlusSquare, Edit, Delete } from 'lucide-svelte';
-  import { listUsers } from '../../lib/api-client';
+  import { user, listUsers, createUser } from '../../lib/api-client';
 
-  let users = [];
+  let authUser = {};
+  onDestroy(user.subscribe(value => authUser = value || {}));
+
+  let users    = [];
+  let createUserData = { username: '', password: '' };
 
   function loadUsers() {
     listUsers().then(response => users = response.data);
+  }
+
+  function closeDialogOnClick(el) {
+    return e => {
+      if (e.target == el) {
+        el.close();
+      }
+    }
+  }
+
+  async function handleCreateUserDialog() {
+    createUserDialog.close();
+    await createUser(createUserData.username, createUserData.password);
+    loadUsers();
+  }
+
+  function openCreateUserDialog() {
+    createUserData = { username: '', password: '' };
+    createUserDialog.showModal();
   }
 
   loadUsers();
@@ -17,16 +41,16 @@
       <tr>
         <th>Username</th>
         <th>
-          <button>
+          <button on:click={openCreateUserDialog}>
             <PlusSquare class="vmiddle"/>
           </button>
         </th>
       </tr>
     </thead>
     <tbody>
-      {#each users as user}
+      {#each users as listUser}
         <tr>
-          <td>{user.username}</td>
+          <td>{listUser.username}</td>
           <td>
             <button><Edit class="vmiddle"/></button>
             <button><Delete class="vmiddle"/></button>
@@ -36,6 +60,24 @@
     </tbody>
   </table>
 </main>
+
+<dialog id=createUserDialog on:click={closeDialogOnClick(createUserDialog)}>
+  <header>
+    Create user
+  </header>
+  <form on:submit|preventDefault={handleCreateUserDialog}>
+    <div class="form-group">
+      <label for=createUsername>Username</label>
+      <input type=text name=createUsername bind:value={createUserData.username}>
+    </div>
+    <div class="form-group">
+      <label for=createEgress>Password</label>
+      <input type=password name=createPassword bind:value={createUserData.password}>
+    </div>
+    <br />
+    <button type="submit">Create</button>
+  </form>
+</dialog>
 
 <style>
   th:last-child, td:last-child {
