@@ -13,7 +13,6 @@ export class User extends AbstractModel {
   @Column()
   pubkey: string;
 
-
   setPassword(password: string): Promise<void> {
     return new Promise(resolve => {
       (new PBKDF2(password, this.username, num_iterations, 32))

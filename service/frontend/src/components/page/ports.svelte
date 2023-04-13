@@ -58,7 +58,7 @@
   }
 
   function loadPorts() {
-    listPorts().then(response => ports = response.port.data);
+    listPorts().then(response => ports = response.data);
   }
 
   loadPorts();
@@ -146,7 +146,6 @@
     text-align: right;
     width: 6em;
   }
-
   th button,
   td button {
     padding: 0.25em;

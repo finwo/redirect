@@ -1,7 +1,7 @@
 import { UserRepository } from '@app/domain/repository/user';
 import { Controller, Req, Post, Get, Middleware, Res } from '@finwo/router';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { detectAuthentication, AuthData, requireAuthentication, AuthenticatedData } from '../../../../Authentication/middleware';
+import { AuthData, requireAuthentication, AuthenticatedData } from '../../../../Authentication/middleware';
 
 @Controller('/v1/users')
 export class UserController {
@@ -10,7 +10,7 @@ export class UserController {
   ) {}
 
   @Get()
-  @Middleware(detectAuthentication)
+  @Middleware(requireAuthentication)
   async getUsers(
     @Req() req: FastifyRequest & AuthData,
   ) {

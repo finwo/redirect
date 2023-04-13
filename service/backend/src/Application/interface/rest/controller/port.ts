@@ -25,7 +25,7 @@ export class PortController {
 
     return {
       ok: true,
-      port: await this.portRepository.find(opts),
+      ...(await this.portRepository.find(opts))
     };
   }
 

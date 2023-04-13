@@ -110,6 +110,12 @@ export const deletePort = (key) => {
   return http._delete(`/v1/ports/${key}`);
 };
 
+export const listUsers = (page = 0, offset = -1) => {
+  const limit = 20;
+  if (offset < 0) offset = limit * page;
+  return http._get(`/v1/users?limit=${limit}&offset=${offset}`);
+};
+
 http.updateLoginStatus()
   .then(() => {
     isLoading.set(false);
