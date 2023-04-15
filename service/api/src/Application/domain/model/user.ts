@@ -1,5 +1,5 @@
 import { AbstractModel } from "@core/abstract-model";
-import { Entity, PrimaryColumn, Column } from "typeorm"
+import { Entity, PrimaryColumn, Column, PrimaryGeneratedColumn } from "typeorm"
 import { num_iterations } from '@config/authentication';
 
 const { PBKDF2 } = require('@finwo/digest-pbkdf2');

@@ -5,14 +5,11 @@
   let ports = [];
 
   let createPortData = { ingress: '', egress: '' };
-  let editPortId     = '';
-  let editPortData   = { ingress: '', egress: '' };
-  let deletePortId   = '';
-  let deletePortData = { ingress: '', egress: '' };
+  let editPortData   = { uid: '', ingress: '', egress: '' };
+  let deletePortData = { uid: '', ingress: '', egress: '' };
 
   function openEditPortDialog(port) {
     return () => {
-      editPortId   = port.ingress;
       editPortData = { ...port };
       editPortDialog.showModal();
     };
@@ -20,7 +17,6 @@
 
   function openDeletePortDialog(port) {
     return () => {
-      deletePortId   = port.ingress;
       deletePortData = { ...port };
       deletePortDialog.showModal();
     };
@@ -39,13 +35,13 @@
 
   async function handleEditPortDialog() {
     editPortDialog.close();
-    await editPort(editPortId, editPortData);
+    await editPort(editPortData.uid, editPortData);
     loadPorts();
   }
 
   async function handleDeletePortDialog(event) {
     if (event.target.returnValue !== 'confirm') return;
-    await deletePort(deletePortId);
+    await deletePort(deletePortData.uid);
     loadPorts();
   }
 

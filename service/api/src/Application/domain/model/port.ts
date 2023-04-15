@@ -4,6 +4,9 @@ import { Entity, PrimaryColumn, Column } from "typeorm"
 @Entity()
 export class Port extends AbstractModel {
   @PrimaryColumn()
+  uid: string;
+
+  @Column()
   ingress: string; // Contains hostname + path + get params
 
   @Column()

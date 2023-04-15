@@ -2,6 +2,7 @@ import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { createConnection } from 'mysql';
 
 type Port = {
+  uid     : string;
   ingress : string;
   egress  : string;
 };
