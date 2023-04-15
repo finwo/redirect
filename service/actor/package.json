@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "start": "node dist/index.js",
+    "start:build": "npm run build && npm run start",
+    "watch": "nodemon -w src -e ts -x npm -- run start:build",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/mysql": "^2.15.21",
+    "@types/node": "^18.15.11",
+    "nodemon": "^2.0.22",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "module-alias": "^2.2.2",
+    "mysql": "^2.18.1"
+  },
+  "_moduleAliases": {
+    "@config": "dist/config"
+  }
+}

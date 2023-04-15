@@ -44,5 +44,18 @@ services:
     volumes:
       - ./service/api:/app
 
+  actor:
+    build: service/api
+    command: npm run watch
+    depends_on:
+      - mysql
+    environment:
+      PORT: 4010
+      VIRTUAL_HOST: actor.docker
+      VIRTUAL_PORT: 4010
+      DB_URL: mysql://root:supers3cret@mysql:3306/redirect
+    volumes:
+      - ./service/actor:/app
+
 volumes:
   mysql:
