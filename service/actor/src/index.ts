@@ -56,9 +56,17 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   const port = await fetchPort(host);
   if (!port) return unprocessable(req, res);
 
+  const ingressUrl = new URL(req.url || '/', 'http://' + req.headers.host);
+  const egressUrl  = new URL(port.egress);
+  const params: Record<string, string> = {};
+
+  for(const [key, value] of ingressUrl.searchParams.entries()) params[key] = value;
+  for(const [key, value] of egressUrl.searchParams.entries()) params[key] = value;
+  egressUrl.search = '?' + (new URLSearchParams(params));
+
   res.statusCode    = 302;
   res.statusMessage = 'Found';
-  res.setHeader('Location', port.egress);
+  res.setHeader('Location', egressUrl.href);
   res.end();
 })
 
