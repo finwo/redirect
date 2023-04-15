@@ -30,15 +30,16 @@ async function fetchPort(ingress: string): Promise<Port | null> {
   if (ingress in portCache) return portCache[ingress];
 
   // Fetch the ingress from db
-  const query = 'SELECT * FROM `port` WHERE `ingress` = ? LIMIT 1;';
+  const query = "SELECT * FROM `port` WHERE ? LIKE CONCAT(`ingress`,'%') ORDER BY LENGTH(`ingress`) DESC LIMIT 1;";
   return portCache[ingress] = new Promise<Port | null>((resolve, reject) => {
-    db.query(query, [ingress], function(err: Error | null, results) {
+    db.query(query, [ingress], function(err: Error | null, results: Port[]) {
       if (err) return reject(err);
 
-      if (!results.length) {
+      const port = results.shift();
+      if (!port) {
         resolve(null);
       } else {
-        resolve({ ...results.shift() });
+        resolve({ ...port });
       }
 
       setTimeout(() => {
@@ -53,7 +54,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   const host = req.headers.host;
   if (!host) return unprocessable(req, res);
 
-  const port = await fetchPort(host);
+  const port = await fetchPort(host + ((req.url || '/').split('#').shift()||'').split('?').shift());
   if (!port) return unprocessable(req, res);
 
   const ingressUrl = new URL(req.url || '/', 'http://' + req.headers.host);
