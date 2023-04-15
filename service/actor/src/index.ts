@@ -34,8 +34,13 @@ async function fetchPort(ingress: string): Promise<Port | null> {
   return portCache[ingress] = new Promise<Port | null>((resolve, reject) => {
     db.query(query, [ingress], function(err: Error | null, results) {
       if (err) return reject(err);
-      if (!results.length) return resolve(null);
-      resolve({ ...results.shift() });
+
+      if (!results.length) {
+        resolve(null);
+      } else {
+        resolve({ ...results.shift() });
+      }
+
       setTimeout(() => {
         delete portCache[ingress];
       }, 5e3);
