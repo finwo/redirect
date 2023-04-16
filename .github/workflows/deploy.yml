@@ -4,8 +4,10 @@ name: Build docker images
 
 on:
   push:
+    tags:
+      - '*'
     branches:
-      - main
+      - '*'
 
 jobs:
   build:
@@ -29,11 +31,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push to Docker Hub
+      - name: Build and push redirect-actor
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: finwo/redirect-actor:latest
-          platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
+          tags:
+            - finwo/redirect-actor:latest
+            - finwo/redirect-actor:${{ github.ref_name }}
+          platforms:
+            - linux/amd64
+            - linux/arm/v7
+            - linux/arm64
           context: ./service/actor
           file: ./service/actor/Dockerfile
