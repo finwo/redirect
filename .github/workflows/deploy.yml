@@ -34,5 +34,6 @@ jobs:
         with:
           push: true
           tags: finwo/redirect-actor:latest
+          platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
           context: ./service/actor
           file: ./service/actor/Dockerfile
