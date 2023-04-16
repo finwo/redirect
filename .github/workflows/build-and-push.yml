@@ -38,9 +38,6 @@ jobs:
           tags:
             - finwo/redirect-actor:latest
             - finwo/redirect-actor:${{ github.ref_name }}
-          platforms:
-            - linux/amd64
-            - linux/arm/v7
-            - linux/arm64
+          platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
           context: ./service/actor
           file: ./service/actor/Dockerfile
