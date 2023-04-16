@@ -39,3 +39,21 @@ jobs:
           platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
           context: ./service/actor
           file: ./service/actor/Dockerfile
+
+      - name: Build and push redirect-api
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "finwo/redirect-api:latest,finwo/redirect-api:${{ github.ref_name }}"
+          platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
+          context: ./service/api
+          file: ./service/api/Dockerfile
+
+      - name: Build and push redirect-webui
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "finwo/redirect-ui:latest,finwo/redirect-ui:${{ github.ref_name }}"
+          platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
+          context: ./service/webui
+          file: ./service/webui/Dockerfile
