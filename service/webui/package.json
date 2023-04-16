@@ -1,0 +1,20 @@
+{
+  "scripts": {
+    "start": "DOCROOT=dist PORT=4000 node util/server.js"
+  },
+  "devDependencies": {
+    "@finwo/digest-pbkdf2": "^1.0.2",
+    "@finwo/observer": "^1.0.1",
+    "buffer": "^6.0.3",
+    "esbuild": "^0.17.15",
+    "esbuild-svelte": "^0.7.3",
+    "fast-glob": "^3.2.12",
+    "lucide-svelte": "^0.132.0",
+    "supercop": "^2.2.6",
+    "svelte-preprocess": "^5.0.3",
+    "svelte-router-spa": "^6.0.3"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
