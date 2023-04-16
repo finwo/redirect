@@ -35,9 +35,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags:
-            - finwo/redirect-actor:latest
-            - finwo/redirect-actor:${{ github.ref_name }}
+          tags: "finwo/redirect-actor:latest,finwo/redirect-actor:${{ github.ref_name }}"
           platforms: 'linux/amd64,linux/arm/v7,linux/arm64'
           context: ./service/actor
           file: ./service/actor/Dockerfile
