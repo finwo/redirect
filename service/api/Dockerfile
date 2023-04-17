@@ -6,6 +6,6 @@ RUN \
   npm install ; \
   npm run build ; \
   rm -rf node_modules ; \
-  npm ci
+  npm install --production
 
 CMD npm start
